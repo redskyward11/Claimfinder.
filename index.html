@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClaimFinder — Free Settlement Finder</title>
+<style>
+:root{--bg:#071426;--panel:#0d2039;--panel2:#102847;--line:#1d3b5f;--text:#edf5ff;--muted:#a8bdd6;--blue:#3b91ff;--green:#25c995;--purple:#9c83ff;--danger:#ff8d8d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#071426,#081b31 65%,#0b2340);color:var(--text);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button,a{cursor:pointer}a{color:#7dbaff;text-decoration:none}a:hover{text-decoration:underline}
+.app{display:grid;grid-template-columns:230px 1fr;min-height:100vh}.side{padding:24px 15px;border-right:1px solid var(--line);background:#061326;display:flex;flex-direction:column;gap:22px}
+.brand{font-size:22px;font-weight:800;display:flex;align-items:center;gap:9px;padding:0 8px}.logo{color:var(--blue);font-size:28px}.free{font-size:11px;background:#123e70;color:#8dc5ff;border-radius:20px;padding:3px 8px}
+nav{display:grid;gap:7px}nav button{border:0;background:transparent;color:var(--muted);padding:12px;border-radius:9px;text-align:left}nav button.active,nav button:hover{background:#12355d;color:white}.sidefoot{margin-top:auto;color:var(--muted);font-size:12px;padding:8px}
+main{padding:30px;max-width:1500px;width:100%;margin:auto}.hero{padding:10px 0 24px}.eyebrow{color:#69b2ff;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px}
+h1{font-size:clamp(28px,4vw,43px);line-height:1.12;max-width:800px;margin:9px 0 12px;letter-spacing:-1px}h1 span{color:var(--blue)}.sub{color:var(--muted);max-width:760px;margin:0}
+.searchbox{display:flex;gap:8px;margin:24px 0 10px;background:#f4f8ff;padding:6px;border-radius:12px;max-width:980px}.searchbox input{border:0;outline:0;background:transparent;color:#142941;padding:12px;flex:1;min-width:0}.btn{border:0;border-radius:9px;padding:11px 16px;background:var(--blue);color:white;font-weight:700}.btn:hover{filter:brightness(1.08)}.btn.secondary{background:#17395e;border:1px solid #315477}.btn.green{background:#087c5d}.quick{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:var(--muted);font-size:13px}.chip{border:1px solid var(--line);border-radius:20px;padding:5px 10px;background:#0d2340;color:#9ccaff}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0}.step{border-right:1px solid var(--line);padding:4px 15px 4px 0}.step:last-child{border:0}.bubble{height:43px;width:43px;display:grid;place-items:center;border-radius:50%;font-size:20px;background:#1656a3;margin-bottom:10px}.step:nth-child(2) .bubble{background:#087c5d}.step:nth-child(3) .bubble{background:#5937b7}.step:nth-child(4) .bubble{background:#087b91}.step b{display:block;font-size:16px;margin-bottom:5px}.step p{font-size:13px;color:var(--muted);margin:0}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(260px,.9fr);gap:16px}.panel{background:linear-gradient(135deg,#0d2039,#0a1b31);border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:16px}.panel h2{font-size:19px;margin:0 0 5px}.panel .hint{color:var(--muted);font-size:13px;margin:0 0 15px}
+.source{display:flex;gap:12px;align-items:center;border:1px solid var(--line);background:#0b1d34;border-radius:10px;padding:13px;margin:9px 0}.sourceicon{height:40px;width:40px;border-radius:10px;display:grid;place-items:center;background:#123f72;font-size:19px;flex-shrink:0}.sourcebody{flex:1;min-width:0}.sourcebody b{display:block}.sourcebody small{color:var(--muted);display:block}.tag{display:inline-block;font-size:11px;color:#73e3bd;background:#103b36;border-radius:15px;padding:3px 7px;margin-top:4px}.source .btn{padding:8px 12px;font-size:13px;white-space:nowrap}
+.checks{display:grid;gap:11px}.check{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:14px}.check i{font-style:normal;color:var(--green);font-size:18px}
+.tip{padding:12px;border-radius:10px;background:#0a2942;border:1px solid #174666;font-size:13px;color:#c6d9ee;margin-top:12px}
+.claimrow{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.claimrow:last-child{border-bottom:0}.claimrow small{display:block;color:var(--muted)}.claimrow select{max-width:150px;background:#0b1d34;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px}
+.empty{padding:18px;text-align:center;border:1px dashed #315477;border-radius:10px;color:var(--muted);font-size:13px}
+.section{display:none}.section.active{display:block}
+footer{color:#819ab6;font-size:12px;padding:8px 0 24px}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{padding:12px 14px;position:sticky;top:0;z-index:5;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:19px}nav{display:flex;overflow:auto;gap:4px}nav button{white-space:nowrap;padding:9px 11px}.sidefoot{display:none}main{padding:20px 14px}.layout{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,1fr)}.step:nth-child(2){border:0}.step{padding-bottom:10px}}
+@media(max-width:500px){.searchbox{flex-wrap:wrap}.searchbox input{flex-basis:100%}.searchbox .btn{width:100%}.steps{gap:8px}.step{padding-right:8px}.source{align-items:flex-start;flex-wrap:wrap}.source .btn{margin-left:52px}.claimrow{grid-template-columns:1fr}.claimrow select{max-width:none;width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><span class="logo">⚖</span> ClaimFinder <span class="free">FREE</span></div>
+  <nav>
+    <button class="active" data-tab="home">⌂ &nbsp; Home</button>
+    <button data-tab="find">⌕ &nbsp; Find Settlements</button>
+    <button data-tab="claims">▤ &nbsp; My Claim Tracker</button>
+    <button data-tab="safety">ⓘ &nbsp; Scam Safety</button>
+  </nav>
+  <div class="sidefoot">🔒 Free to use<br>No subscription. No fees.<br>Your tracker stays in this browser.</div>
+</aside>
+<main>
+<section id="home" class="section active">
+  <div class="hero">
+    <div class="eyebrow">Your free settlement assistant</div>
+    <h1>Find & track settlement claims — <span>for free</span></h1>
+    <p class="sub">Search for class-action settlements and consumer refunds, then verify eligibility and file directly with the official administrator. No account needed.</p>
+    <form class="searchbox" id="searchForm">
+      <input id="query" placeholder="Search a company, product, app, or issue (e.g. Meta, phone bill)" aria-label="Company, product, or issue">
+      <button class="btn" type="submit">Search settlements ↗</button>
+    </form>
+    <div class="quick">Try:
+      <button class="chip" data-query="social media privacy">Social media privacy</button>
+      <button class="chip" data-query="bank fees">Bank fees</button>
+      <button class="chip" data-query="data breach">Data breach</button>
+      <button class="chip" data-query="subscriptions">Subscriptions</button>
+      <button class="chip" data-query="consumer refunds">Consumer refunds</button>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step"><div class="bubble">⌕</div><b>1. Search</b><p>Look for settlements connected to companies or products you used.</p></div>
+    <div class="step"><div class="bubble">✓</div><b>2. Check eligibility</b><p>Read the official class definition, dates, and proof requirements.</p></div>
+    <div class="step"><div class="bubble">▤</div><b>3. File directly</b><p>Use the official claim form. Filing is generally free.</p></div>
+    <div class="step"><div class="bubble">↗</div><b>4. Track it</b><p>Keep a local record of what you filed and any deadline.</p></div>
+  </div>
+  <div class="layout">
+    <div class="panel">
+      <h2>Start with trusted sources</h2><p class="hint">These links open real websites in a new tab. Search results are leads, not proof that you qualify.</p>
+      <div class="source"><div class="sourceicon">🏛</div><div class="sourcebody"><b>FTC refund programs</b><small>Government-run refund programs and official case information.</small><span class="tag">Official government source</span></div><a class="btn" href="https://www.ftc.gov/enforcement/refunds" target="_blank" rel="noopener">Open ↗</a></div>
+      <div class="source"><div class="sourceicon">⚖</div><div class="sourcebody"><b>Search official settlement websites</b><small>Find court-appointed administrators and claim forms for specific cases.</small></div><button class="btn" onclick="runSearch('official class action settlement claim form')">Search ↗</button></div>
+      <div class="source"><div class="sourceicon">🔎</div><div class="sourcebody"><b>ClassAction.org</b><small>Settlement news and consumer class-action information. Verify claims on the official case site.</small></div><a class="btn secondary" href="https://www.classaction.org/" target="_blank" rel="noopener">Visit ↗</a></div>
+      <div class="source"><div class="sourceicon">📋</div><div class="sourcebody"><b>Top Class Actions</b><small>Settlement listings and claim information; not the court or administrator.</small></div><a class="btn secondary" href="https://topclassactions.com/" target="_blank" rel="noopener">Visit ↗</a></div>
+    </div>
+    <div>
+      <div class="panel"><h2>Why use ClaimFinder?</h2><div class="checks">
+        <div class="check"><i>✓</i><span>100% free — no paid plan or hidden subscription</span></div>
+        <div class="check"><i>✓</i><span>No login or personal details required</span></div>
+        <div class="check"><i>✓</i><span>Claim tracker saved only in this browser</span></div>
+        <div class="check"><i>✓</i><span>Links to official sources for verification</span></div>
+      </div></div>
+      <div class="panel"><h2>Before you file</h2><div class="checks">
+        <div class="check"><i>1</i><span>Check the purchase/use dates and location requirements.</span></div>
+        <div class="check"><i>2</i><span>Never invent information or submit a claim you know is false.</span></div>
+        <div class="check"><i>3</i><span>Never pay to “unlock” a refund or guarantee a payout.</span></div>
+      </div><div class="tip">This is a search and tracking tool, not a law firm. It cannot guarantee eligibility or payment.</div></div>
+    </div>
+  </div>
+</section>
+<section id="find" class="section">
+  <div class="hero"><div class="eyebrow">Search tools</div><h1>Find settlements</h1><p class="sub">Search multiple public sources at once. Review the result and confirm all details with the official administrator before filing.</p></div>
+  <form class="searchbox" id="searchForm2"><input id="query2" placeholder="Company, product, or issue" aria-label="Search terms"><button class="btn" type="submit">Search ↗</button></form>
+  <div class="panel"><h2>Search destinations</h2><p class="hint">A separate search tab opens for each source. These searches are free.</p><div id="searchLinks"></div></div>
+</section>
+<section id="claims" class="section">
+  <div class="hero"><div class="eyebrow">Saved on this device</div><h1>My claim tracker</h1><p class="sub">Record claims you are researching or have submitted. This data stays in your browser; it is not uploaded to a server.</p></div>
+  <div class="panel"><h2>Add a claim to track</h2><p class="hint">Do not enter Social Security numbers, bank details, claim PINs, or other sensitive information here.</p>
+    <form id="claimForm">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">
+        <input id="claimName" required maxlength="100" placeholder="Settlement / company name" style="padding:11px;border:1px solid var(--line);background:#07182c;color:white;border-radius:8px">
+        <input id="claimUrl" type="url" placeholder="Official claim website (optional)" style="padding:11px;border:1px solid var(--line);background:#07182c;color:white;border-radius:8px">
+        <input id="claimDeadline" type="date" aria-label="Deadline (optional)" style="padding:11px;border:1px solid var(--line);background:#07182c;color:white;border-radius:8px">
+      </div><button class="btn" style="margin-top:12px" type="submit">+ Add to tracker</button>
+    </form>
+  </div>
+  <div class="panel"><h2>Your tracked claims</h2><p class="hint">Change a status as you research, submit, or hear back.</p><div id="claimList"></div><button class="btn secondary" id="exportBtn" type="button">Export tracker JSON</button> <button class="btn secondary" id="clearBtn" type="button">Clear tracker</button></div>
+</section>
+<section id="safety" class="section">
+  <div class="hero"><div class="eyebrow">Stay safe</div><h1>Spot refund scams</h1><p class="sub">Real settlements do not require you to pay a stranger to release your money.</p></div>
+  <div class="panel"><h2>Red flags</h2><div class="checks">
+    <div class="check"><i>✕</i><span>Someone says you must pay a fee, gift card, or crypto to get your refund.</span></div>
+    <div class="check"><i>✕</i><span>A message guarantees a payout or pressures you to act immediately.</span></div>
+    <div class="check"><i>✕</i><span>A page asks for unnecessary sensitive information before explaining the case.</span></div>
+    <div class="check"><i>✕</i><span>A link looks official but does not match the domain shown on the government or court notice.</span></div>
+  </div><div class="tip">The FTC says it never requires upfront fees to receive an FTC refund. Check the official list at <a href="https://www.ftc.gov/enforcement/refunds" target="_blank" rel="noopener">ftc.gov/enforcement/refunds</a>.</div></div>
+  <div class="panel"><h2>How to verify a settlement</h2><ol style="color:var(--muted);padding-left:20px"><li>Find the case name and court information.</li><li>Confirm the administrator from the court notice or official government source.</li><li>Read the full eligibility rules and deadline.</li><li>Use the official claim form, and keep a copy of your confirmation.</li></ol></div>
+</section>
+<footer>ClaimFinder is a free helper tool, not affiliated with any court, government agency, or settlement administrator. Search results can be incomplete or outdated; always verify the official case page.</footer>
+</main>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const tabs = [...document.querySelectorAll('nav button')];
+tabs.forEach(b=>b.addEventListener('click',()=>{tabs.forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===b.dataset.tab));window.scrollTo({top:0,behavior:'smooth'});if(b.dataset.tab==='find') renderSearchLinks($('#query2').value||$('#query').value||'');if(b.dataset.tab==='claims')renderClaims();}));
+function searchUrl(base,q){return base+encodeURIComponent(q)}
+function runSearch(q){
+ q=(q||'').trim();if(!q){alert('Enter a company, product, or issue first.');return}
+ const searches=[
+  ['FTC official refund programs','https://www.ftc.gov/enforcement/refunds'],
+  ['Official settlement administrator / claim form','https://www.google.com/search?q='+encodeURIComponent(q+' official settlement claim form administrator')],
+  ['Court case information','https://www.google.com/search?q='+encodeURIComponent(q+' class action settlement court case')],
+  ['ClassAction.org listings','https://www.google.com/search?q='+encodeURIComponent('site:classaction.org '+q+' settlement')],
+  ['Top Class Actions listings','https://www.google.com/search?q='+encodeURIComponent('site:topclassactions.com '+q+' settlement')]
+ ];
+ searches.forEach(([n,u])=>window.open(u,'_blank','noopener'));
+ renderSearchLinks(q);
+}
+function renderSearchLinks(q){
+ const box=$('#searchLinks');if(!box)return;
+ q=(q||'').trim();
+ const items=[
+ ['Official claim form search','https://www.google.com/search?q='+encodeURIComponent((q?q+' ':'')+'official settlement claim form administrator')],
+ ['FTC refund programs','https://www.ftc.gov/enforcement/refunds'],
+ ['Court records / case details','https://www.google.com/search?q='+encodeURIComponent((q?q+' ':'')+'class action settlement court case')],
+ ['ClassAction.org search','https://www.google.com/search?q='+encodeURIComponent('site:classaction.org '+q+' settlement')],
+ ['Top Class Actions search','https://www.google.com/search?q='+encodeURIComponent('site:topclassactions.com '+q+' settlement')]
+ ];
+ box.innerHTML=items.map(([n,u])=>`<div class="source"><div class="sourceicon">↗</div><div class="sourcebody"><b>${escapeHtml(n)}</b><small>${q?'Search terms: '+escapeHtml(q):'Enter a search above to narrow results.'}</small></div><a class="btn secondary" href="${u}" target="_blank" rel="noopener">Open ↗</a></div>`).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('#searchForm').addEventListener('submit',e=>{e.preventDefault();runSearch($('#query').value)});
+$('#searchForm2').addEventListener('submit',e=>{e.preventDefault();runSearch($('#query2').value)});
+document.querySelectorAll('[data-query]').forEach(b=>b.addEventListener('click',()=>{const q=b.dataset.query;$('#query').value=q;runSearch(q)}));
+const STORAGE='claimfinder-free-v1';
+function getClaims(){try{return JSON.parse(localStorage.getItem(STORAGE)||'[]')}catch(e){return []}}
+function saveClaims(a){localStorage.setItem(STORAGE,JSON.stringify(a));renderClaims()}
+$('#claimForm').addEventListener('submit',e=>{e.preventDefault();const name=$('#claimName').value.trim();if(!name)return;const url=$('#claimUrl').value.trim();if(url&&!/^https?:\/\//i.test(url)){alert('Please use a full http:// or https:// URL.');return}const a=getClaims();a.push({id:Date.now(),name,url,deadline:$('#claimDeadline').value,status:'Researching'});saveClaims(a);e.target.reset()});
+function renderClaims(){
+ const list=$('#claimList');if(!list)return;const a=getClaims();
+ if(!a.length){list.innerHTML='<div class="empty">No claims tracked yet. Add a settlement above to get started.</div>';return}
+ list.innerHTML=a.map(c=>`<div class="claimrow"><div><b>${escapeHtml(c.name)}</b><small>${c.deadline?'Deadline: '+escapeHtml(c.deadline):'No deadline entered'} ${c.url?' · <a href="'+escapeHtml(c.url)+'" target="_blank" rel="noopener">Open site ↗</a>':''}</small></div><div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap"><select aria-label="Status for ${escapeHtml(c.name)}" data-status="${c.id}">${['Researching','May qualify','Ready to file','Submitted','Paid','Not eligible','Closed'].map(s=>`<option ${c.status===s?'selected':''}>${s}</option>`).join('')}</select><button class="btn secondary" data-delete="${c.id}" type="button">Delete</button></div></div>`).join('');
+ list.querySelectorAll('[data-status]').forEach(el=>el.addEventListener('change',()=>{const a=getClaims();const c=a.find(x=>x.id===Number(el.dataset.status));if(c){c.status=el.value;localStorage.setItem(STORAGE,JSON.stringify(a))}}));
+ list.querySelectorAll('[data-delete]').forEach(el=>el.addEventListener('click',()=>{saveClaims(getClaims().filter(x=>x.id!==Number(el.dataset.delete)))}));
+}
+$('#exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(getClaims(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='claimfinder-tracker.json';a.click();URL.revokeObjectURL(a.href)});
+$('#clearBtn').addEventListener('click',()=>{if(confirm('Delete all claims saved in this browser?')){localStorage.removeItem(STORAGE);renderClaims()}});
+renderClaims();renderSearchLinks('');
+</script>
+</body>
+</html>
